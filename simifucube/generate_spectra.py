@@ -7,7 +7,6 @@ from simifucube.spectra import Spectrum
 from simifucube.congrid import congrid
 from specutils import SpectrumCollection, Spectrum1D
 import astropy.units as u
-from astropy.table import Table
 import gc
 from simulation.angmom import sideon
 
@@ -77,7 +76,7 @@ def generate_spectra(snap, z_dist=20000, doppler_shift=True, use_template_star=F
     if doppler_shift:
         print('Doppler-shift requested')
     if use_template_star:
-        print('using fixed age ({}) and metallicity ({})'.format(STD_MET, STD_AGE))
+        print('using fixed metallicity ({}) and age ({})'.format(STD_MET, STD_AGE))
     whole_spectrum_list = list()
     pos_list = list()
 
@@ -219,7 +218,6 @@ class SnapSpectra:
         print("Found {} stars".format(len(self._preprocessed_snap.s)))
 
     def generate_spectra(self, save_as=None, doppler_shift=True, use_template_star=False):
-        print('Generating spectra...')
         sp_list, pos, smooth, last_valid_freq = generate_spectra(self._preprocessed_snap, doppler_shift=doppler_shift, use_template_star=use_template_star)
         self.spectrum = to_spectrum1d(sp_list)
         del sp_list

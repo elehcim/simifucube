@@ -1,15 +1,13 @@
 import os
 import numpy as np
-import pandas as pd
 from astropy.io import fits
-from astropy import units as u
-from astropy import constants as c
 import matplotlib.pyplot as plt
 import pynbody
 
 from simifucube.doppler_shift import dopplerShift
 
 import logging
+
 
 def setup_logger(logger_level=logging.INFO, logger_name=None):
 

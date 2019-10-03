@@ -1,8 +1,8 @@
 import os
 import numpy as np
-from generate_spectra import spectra_from_snap, spectra_from_pickle
+from simifucube.generate_spectra import spectra_from_snap, spectra_from_pickle
 import pynbody
-from create_noisy_cube import create_cube, contract_name
+from simifucube.create_noisy_cube import create_cube, contract_name
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 

@@ -1,7 +1,6 @@
 import numpy as np
 from functools import partial
 import matplotlib.pyplot as plt
-from astropy import units as u
 from simifucube.write_cube import write_cube
 from spectral_cube import SpectralCube
 

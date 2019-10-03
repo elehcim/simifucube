@@ -1,9 +1,7 @@
 import numpy as np
 import tqdm
 import pynbody
-import astropy.units as u
 from astropy.wcs import WCS
-import gc
 import time
 from simifucube.create_noisy_cube import get_header
 from spectral_cube import SpectralCube, LazyMask

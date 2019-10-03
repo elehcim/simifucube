@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-from astropy.io import fits
 import numpy as np
 import os
 from astropy.table import Table

@@ -1,6 +1,7 @@
 import subprocess
 from astropy.io import fits
 
+
 def contract_name(stem, sim, isnap, peri, r, ext, bins=None, fix=False, doppler_shift=True, **kwargs):
     sim_str = str(sim)[:2]
     f = "{}_{}p{:g}_{:04d}_r{}".format(stem, sim_str, peri/100, isnap, r)
@@ -22,9 +23,11 @@ def cd_keyword(header):
         header['CD{0}_{0}'.format(i)] = header['CDELT{}'.format(i)]
     return header
 
+
 def get_git_version():
     label = subprocess.check_output(["git", "describe", "--tags", "--dirty"]).strip().decode()
     return label
+
 
 def write_cube(cube, variance_cube, filename, overwrite=False, meta=None):
     print('Writing cube {}'.format(filename))

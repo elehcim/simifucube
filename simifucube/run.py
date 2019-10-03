@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
-import os
-import sys
+
 import warnings
 
 import numpy as np
 import pynbody
-from astropy.io import fits
-import astropy.units as u
-from astropy.table import Table
+from astropy.io.fits.verify import VerifyWarning
 
-from spectral_cube import SpectralCube, LazyMask
 
-import pickle
+from spectral_cube import SpectralCube
 
 from simifucube.generate_spectra import SnapSpectra, muse_rebin
 from simifucube.cube_generator import CubeGenerator
-from simifucube.render_cube import render_cube
 from simifucube.write_cube import write_cube
 from simifucube.der_snr import DER_SNR
 
@@ -92,5 +87,5 @@ stat_data = np.reshape(error_spectra, muse_cube.shape).astype(np.float32)
 variance_cube = SpectralCube(data=stat_data**2 * (muse_cube.unit)**2, wcs=muse_cube.wcs, header=muse_cube.header)
 
 # muse_cube.write(out_name+'pix{}.fits'.format(bins), overwrite=True)
-
+warnings.simplefilter('ignore', category=VerifyWarning)
 write_cube(muse_cube, variance_cube=variance_cube, filename=out_name+'_r{}pix{}.fits'.format(config['size_cuboid'],config['bins']), meta=config, overwrite=True)
