@@ -41,11 +41,11 @@ class CubeGenerator:
             del self.star_snap.properties['boxsize']
         # print(self.star_snap.properties)
         print('Doing projection')
-        print(np.nan_to_num(self.snap_spectra.spectrum.flux.view(np.ndarray), copy=True))
-        print(self.star_snap['pos'])
-        print(self.star_snap['smooth'])
-        print(self.star_snap['mass'])
-        print(self.star_snap['rho'])
+        print('flux  ', np.nan_to_num(self.snap_spectra.spectrum.flux.view(np.ndarray), copy=True))
+        print('pos   ', self.star_snap['pos'])
+        print('smooth', self.star_snap['smooth'])
+        print('mass  ', self.star_snap['mass'])
+        print('rho   ', self.star_snap['rho'])
         im_cube = render_cube(
                 self.star_snap,
                 qty=np.nan_to_num(self.snap_spectra.spectrum.flux.view(np.ndarray), copy=True),
@@ -79,8 +79,9 @@ class CubeGenerator:
         return self.datacube
 
     def sum_on_line_of_sigth(self):
+        flux = np.nan_to_num(self.snap_spectra.spectrum.flux.view(np.ndarray), copy=True)
         self.binned_stat = binned_statistic_2d(self.snap_spectra.pos[0], self.snap_spectra.pos[1],
-                                self.snap_spectra.spectrum.flux.transpose(1,0),
+                                flux.transpose(1,0),
                                 statistic='sum',
                                 bins=self.bins,
                                 expand_binnumbers=True)

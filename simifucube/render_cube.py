@@ -5,13 +5,10 @@ import numpy as np
 
 from simifucube import _render
 
-def render_cube(snap, qty, x2=100, nx=500, y2=None, ny=None, x1=None,
-                 y1=None, z_plane=0.0, out_units=None, xy_units=None, kernel=Kernel(), z_camera=None,
-                 smooth='smooth',
-                 smooth_in_pixels=False,
-                 force_quiet=False,
-                  smooth_range=None, snap_slice=None, num_threads=None
-                  ):
+def render_cube(snap, qty, x2=100, nx=500, y2=None, ny=None, x1=None, y1=None,
+                z_plane=0.0, out_units=None, xy_units=None, kernel=Kernel(), z_camera=None,
+                smooth='smooth', smooth_in_pixels=False, smooth_range=None, snap_slice=None, num_threads=None
+                ):
     """The single-threaded image rendering core function. External calls
     should be made to the render_image function."""
 

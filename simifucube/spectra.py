@@ -166,6 +166,9 @@ class Spectrum:
     v_doppler_shift = 0
 
     def __init__(self, wavelength, flux):
+        """wavelength in Angstrom
+        Flux in L_sol Msol-1 A-1
+        """
         self.wavelength = wavelength
         self.flux = flux
 
