@@ -61,12 +61,12 @@ snsp.generate_spectra(use_template_star=True)
 
 cg = CubeGenerator(snsp, bins=bins)
 # cg.sum_on_line_of_sigth()
-# cube = cg.create_cube()
+# cube = cg.create_spectral_cube()
 # cube.write(out_name+'pix{}_sum.fits'.format(bins), overwrite=True)
 
 im = cg.sph_projection_direct(num_threads=num_threads)
 
-cube_sph = cg.create_cube()
+cube_sph = cg.create_spectral_cube()
 
 if do_spectral_rebinning:
     muse_cube = muse_rebin(snsp.last_valid_freq, cube_sph)

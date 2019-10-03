@@ -97,7 +97,7 @@ class CubeGenerator:
     def n_stars(self):
         return self.snap_spectra.spectrum.flux.shape[0]
 
-    def create_cube(self, mask=None, wcs=None, header=None):
+    def create_spectral_cube(self, mask=None, wcs=None, header=None):
         if not hasattr(self, 'datacube'):
             raise RuntimeError('First run an aggregator function')
         spectra1d = self.snap_spectra.spectrum

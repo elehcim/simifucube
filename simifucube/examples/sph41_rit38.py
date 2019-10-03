@@ -33,11 +33,11 @@ snsp.generate_spectra_from_pickle(pickle_name)
 cg = CubeGenerator(snsp, bins=bins)
 
 cg.sum_on_line_of_sigth()
-cube = cg.create_cube()
+cube = cg.create_spectral_cube()
 muse_rebin(snsp.last_valid_freq, cube).write('pippo_summation.fits', overwrite=True)
 
 im = cg.sph_projection_direct()
-cube_sph = cg.create_cube()
+cube_sph = cg.create_spectral_cube()
 
 if do_spectral_rebinning:
     muse_cube = muse_rebin(snsp.last_valid_freq, cube_sph)
