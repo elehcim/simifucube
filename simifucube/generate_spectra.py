@@ -13,9 +13,11 @@ from simulation.angmom import sideon
 MUSE_LIMITS = {'start': 4750, 'stop': 9600, 'step': 1.25}
 MUSE_WVL = np.arange(**MUSE_LIMITS)
 
-L_sol = 3.839e33  # erg s-1
+L_sol_in_erg_per_s = 3.839e33  # erg s-1
 kpc_in_cm = 3.086e+21  # cm
 
+conv_fact = L_sol_in_erg_per_s / (4 * np.pi * kpc_in_cm**2)  # Lsol cm-2 ~ erg s-1 cm-2
+print('conv_fact=',conv_fact)
 def compute_intensity(spectra, filt):
     intensity = list()
     for sp in spectra:
@@ -70,6 +72,9 @@ STD_AGE = 3
 # STD_MULTIPLE_AGE = [1, 4]
 
 def generate_spectra(snap, z_dist=20000, doppler_shift=True, use_template_star=False):
+    """This is the core function allowing a set of particles in a pynbody snap to be associated with a list of spectra.
+    Distance and redshift are taken into account.
+    """
     print("Generating spectra...")
     print('Redshift: {:.2}'.format(snap.ancestor.header.redshift))
     print('Distance: {:.0f} Mpc'.format(z_dist/1000.0))
@@ -109,8 +114,11 @@ def generate_spectra(snap, z_dist=20000, doppler_shift=True, use_template_star=F
                     last_valid_freq = last_nonzero_freq
 
             mass = star['mass'].in_units('Msol')
-            sp.flux *= mass * L_sol / (4 * np.pi * dist_sq * kpc_in_cm**2)  # erg s-1 cm-2 A-1
+            print("mass (Msol)", mass)
+            # sp.flux *= mass * L_sol_in_erg_per_s / (4 * np.pi * dist_sq * kpc_in_cm**2)  # erg s-1 cm-2 A-1
+            sp.flux *= mass * conv_fact / dist_sq  # L_sol Msol-1 A-1 * Lsol/erg s-1 cm-2 A-1
 
+            print('flux', sp.flux)
             whole_spectrum_list.append(sp)
 
             # del sp
@@ -265,6 +273,6 @@ def muse_rebin(last_valid_freq, cube):
     if last_valid_freq > MUSE_LIMITS['stop']:
         last_valid_freq = MUSE_LIMITS['stop']
     new_bins = np.arange(MUSE_LIMITS['start'], last_valid_freq, MUSE_LIMITS['step']) * u.AA
-    print(new_bins)
+    print('new_bins=',new_bins)
     muse_cube = cube.spectral_interpolate(new_bins)
     return muse_cube
