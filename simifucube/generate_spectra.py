@@ -114,11 +114,11 @@ def generate_spectra(snap, z_dist=20000, doppler_shift=True, use_template_star=F
                     last_valid_freq = last_nonzero_freq
 
             mass = star['mass'].in_units('Msol')
-            print("mass (Msol)", mass)
+            # print("mass (Msol)", mass)
             # sp.flux *= mass * L_sol_in_erg_per_s / (4 * np.pi * dist_sq * kpc_in_cm**2)  # erg s-1 cm-2 A-1
             sp.flux *= mass * conv_fact / dist_sq  # L_sol Msol-1 A-1 * Lsol/erg s-1 cm-2 A-1
 
-            print('flux', sp.flux)
+            # print('flux', sp.flux)
             whole_spectrum_list.append(sp)
 
             # del sp
