@@ -1,5 +1,4 @@
 import pynbody
-# import simulation
 import numpy as np
 from pynbody.array import SimArray
 
