@@ -1,8 +1,10 @@
-import numpy as np
 from functools import partial
+
 import matplotlib.pyplot as plt
-from simifucube.write_cube import write_cube
+import numpy as np
 from spectral_cube import SpectralCube
+
+from simifucube.write_cube import write_cube
 
 # From Ibarra 2019 article MANGA survey
 # k1 = 100

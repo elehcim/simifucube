@@ -1,25 +1,13 @@
 import os
-import sys
-import warnings
 
 import numpy as np
 import pynbody
-from astropy.convolution import Gaussian1DKernel, Gaussian2DKernel
-from astropy.io import fits
-import astropy.units as u
-from astropy.table import Table
+from simifucube.util.der_snr import DER_SNR
+from spectral_cube import SpectralCube
 
-from astropy.wcs import WCS
-from scipy.stats import binned_statistic_2d
-from spectral_cube import SpectralCube, LazyMask
-
-import pickle
-
-from generate_spectra import MUSE_LIMITS, SnapSpectra, muse_rebin
-from cube_generator import CubeGenerator
-from render_cube import render_cube
-from write_cube import write_cube
-from der_snr import DER_SNR
+from simifucube.cube_generator import CubeGenerator
+from simifucube.generate_spectra import SnapSpectra, muse_rebin
+from simifucube.write_cube import write_cube
 
 MORIA_PATH='/mnt/data/MoRIA/M1-10_Verbeke2017/M10sim41001'
 SIM_PATH = '/home/michele/sim/MySimulations/ng'
