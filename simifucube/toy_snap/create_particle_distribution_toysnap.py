@@ -7,16 +7,19 @@ from particle_cloud import  create_sphere_of_positions, create_box_vz_normal, vz
 
 config = dict(
 n_star=1000,  # number of stars per bunch
-r_sphere=2,   # radius of the spherical cloud
 
 particle_mass = 1e4,  # Msun
 boxsize = 1000,
+
 overwrite=True,
+
 stem='toy_snap_cloud',
 v1=20,
 v2=-500,
-sigma=10,
+sigma=100,
+smooth=None,
 dist=2,
+r_sphere=1,   # radius of the spherical cloud
 )
 
 
@@ -106,7 +109,6 @@ def main(config):
         else:
             raise RuntimeError("File {outname} already exists. Use 'overwrite' or use a different name")
 
-
     f1 = create_snap(v=config['v1'], **config)
     f2 = create_snap(v=config['v2'], **config)
 
@@ -118,15 +120,18 @@ def main(config):
 
     f.properties['boxsize'] = config['boxsize'] * pynbody.units.kpc
     print(f.properties)
-    # print(f['smooth'])
+
+    # generate smooth
+
     # pynbody.config['sph']['smooth-particles'] = 1
     # pynbody.config['sph']['tree-leafsize'] = 1
-    print(len(f.s))
-    # f['smooth'] = SimArray(np.array([0.2]*len(f)), units='kpc')
+    if config['smooth'] is None:
+        print('smooth:', f['smooth'])
+    else:
+        f['smooth'] = SimArray(np.array(config['smooth']*len(f)), units='kpc')
 
     f.write(filename=outname, fmt=pynbody.snapshot.gadget.GadgetSnap)
     return f
-
 
 if __name__ == '__main__':
     f = main(config)
