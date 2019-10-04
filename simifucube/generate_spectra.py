@@ -4,8 +4,8 @@ import tqdm
 import numpy as np
 import pickle
 from simifucube.spectra import Spectrum
-from simifucube.congrid import congrid
-from specutils import SpectrumCollection, Spectrum1D
+from simifucube.util.congrid import congrid
+from specutils import Spectrum1D
 import astropy.units as u
 import gc
 from simulation.angmom import sideon  # TODO use pynbody, so that I remove the dependency on simulation

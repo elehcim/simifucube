@@ -4,7 +4,7 @@ from astropy.io import fits
 import matplotlib.pyplot as plt
 import pynbody
 
-from simifucube.doppler_shift import dopplerShift
+from simifucube.util.doppler_shift import dopplerShift
 
 import logging
 

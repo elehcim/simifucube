@@ -12,7 +12,7 @@ from spectral_cube import SpectralCube
 from simifucube.generate_spectra import SnapSpectra, muse_rebin
 from simifucube.cube_generator import CubeGenerator
 from simifucube.write_cube import write_cube
-from simifucube.der_snr import DER_SNR
+from simifucube.util.der_snr import DER_SNR
 
 config = dict(
 use_template_star=True,
