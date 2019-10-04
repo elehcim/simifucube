@@ -1,7 +1,6 @@
 # Try to get spectrum images from a simulation
 
 
-# import simulation
 import pynbody
 from spectra import Spectrum
 import matplotlib

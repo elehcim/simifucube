@@ -8,7 +8,7 @@ from simifucube.congrid import congrid
 from specutils import SpectrumCollection, Spectrum1D
 import astropy.units as u
 import gc
-from simulation.angmom import sideon
+from simulation.angmom import sideon  # TODO use pynbody, so that I remove the dependency on simulation
 
 MUSE_LIMITS = {'start': 4750, 'stop': 9600, 'step': 1.25}
 MUSE_WVL = np.arange(**MUSE_LIMITS)
