@@ -13,6 +13,6 @@ setup(name='simifucube',
       # TODO make _render compilation automatic
       entry_points={
           'console_scripts': ['v_sigma_from_h3h4=simifucube.util.v_sigma_from_h3h4:main',
-                              ]
+                              'create_particle_distribution_toysnap=simifucube.toy_snap.create_particle_distribution_toysnap:main']
                    }
       )

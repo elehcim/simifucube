@@ -2,7 +2,7 @@ import os
 import pynbody
 import numpy as np
 from pynbody.array import SimArray
-from particle_cloud import  create_sphere_of_positions, create_box_vz_normal, vz_normal
+from simifucube.toy_snap.particle_cloud import create_sphere_of_positions, create_box_vz_normal, vz_normal
 
 
 config = dict(
@@ -18,7 +18,7 @@ v1=20,
 v2=-500,
 sigma=100,
 smooth=None,
-dist=2,
+dist=4,
 r_sphere=1,   # radius of the spherical cloud
 )
 
@@ -93,14 +93,14 @@ def join_snaps(s1, s2):
 
     return s
 
-def main(config):
+def main(config=config):
     n_star = config['n_star']
     stem = config['stem']
 
     v1_sign = get_char_sign(config['v1'])
     v2_sign = get_char_sign(config['v2'])
 
-    outname = f"{stem}_n{n_star}V{v1_sign}{config['v1']}{v2_sign}{config['v2']}_s{config['sigma']}.snap"
+    outname = f"{stem}_n{n_star}_r{config['r_sphere']}d{config['dist']}V{v1_sign}{config['v1']}{v2_sign}{config['v2']}_s{config['sigma']}.snap"
     print(f"Writing to {outname}")
     if os.path.isfile(outname):
         if config['overwrite']:
