@@ -40,10 +40,10 @@ def create_sphere_snap(n_star, r_sphere, v, sigma, particle_mass, **kwargs):
     f['mass'] = SimArray([1e-10]*n_star, units='1e10 Msol') * particle_mass
     return f
 
-def create_cube_snap(n_star, r_sphere, v, sigma, particle_mass, **kwargs):
+def create_cube_snap(n_star, half_edge, v, sigma, particle_mass, **kwargs):
     f = pynbody.new(star=n_star)
 
-    pos, vel = create_box_vz_normal(n_star, r_sphere, v, sigma)
+    pos, vel = create_box_vz_normal(n_star, half_edge, v, sigma)
     f['pos'] = SimArray(pos, units='kpc')
     f['vel'] = SimArray(vel, units='km s**-1')
     f['mass'] = SimArray([1e-10]*n_star, units='1e10 Msol') * particle_mass
@@ -129,8 +129,8 @@ def generate_snap(config):
 
     # f1 = create_sphere_snap(v=v1, **config)
     # f2 = create_sphere_snap(v=v2, **config)
-    f1 = create_cube_snap(n_star=n_star, r_sphere=r_sphere, v=v1, sigma=sigma, particle_mass=particle_mass)
-    f2 = create_cube_snap(n_star=n_star, r_sphere=r_sphere, v=v2, sigma=sigma, particle_mass=particle_mass)
+    f1 = create_cube_snap(n_star=n_star, half_edge=r_sphere, v=v1, sigma=sigma, particle_mass=particle_mass)
+    f2 = create_cube_snap(n_star=n_star, half_edge=r_sphere, v=v2, sigma=sigma, particle_mass=particle_mass)
 
     # offset along x
     f1['pos'][:,0] -= dist/2
