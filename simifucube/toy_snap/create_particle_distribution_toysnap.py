@@ -1,26 +1,27 @@
 import os
 import pynbody
 import numpy as np
+from configparser import ConfigParser
+from argparse import ArgumentParser
 from pynbody.array import SimArray
 from simifucube.toy_snap.particle_cloud import create_sphere_of_positions, create_box_vz_normal, vz_normal
 
+# config = dict(
+# n_star=1000,  # number of stars per bunch
 
-config = dict(
-n_star=1000,  # number of stars per bunch
+# particle_mass = 1e4,  # Msun
+# boxsize = 1000,
 
-particle_mass = 1e4,  # Msun
-boxsize = 1000,
+# overwrite=True,
 
-overwrite=True,
-
-stem='toy_snap_cloud',
-v1=20,
-v2=-500,
-sigma=100,
-smooth=None,
-dist=4,
-r_sphere=1,   # radius of the spherical cloud
-)
+# stem='toySnapCloudCube',
+# v1=20,
+# v2=-500,
+# sigma=100,
+# smooth=None,
+# dist=4,
+# r_sphere=0.5,   # radius of the spherical cloud or the radius of the sphere inscribed into the box
+# )
 
 
 STD_PROPERTIES = dict(a=1.0,
@@ -46,11 +47,20 @@ def get_all_keys(snap):
     ak.sort()
     return ak
 
-def create_snap(n_star, r_sphere, v, sigma, particle_mass, **kwargs):
+def create_sphere_snap(n_star, r_sphere, v, sigma, particle_mass, **kwargs):
     f = pynbody.new(star=n_star)
 
     pos = create_sphere_of_positions(n_star, r_sphere)
     vel = vz_normal(n_star, v, sigma)
+    f['pos'] = SimArray(pos, units='kpc')
+    f['vel'] = SimArray(vel, units='km s**-1')
+    f['mass'] = SimArray([1e-10]*n_star, units='1e10 Msol') * particle_mass
+    return f
+
+def create_cube_snap(n_star, r_sphere, v, sigma, particle_mass, **kwargs):
+    f = pynbody.new(star=n_star)
+
+    pos, vel = create_box_vz_normal(n_star, r_sphere, v, sigma)
     f['pos'] = SimArray(pos, units='kpc')
     f['vel'] = SimArray(vel, units='km s**-1')
     f['mass'] = SimArray([1e-10]*n_star, units='1e10 Msol') * particle_mass
@@ -93,45 +103,86 @@ def join_snaps(s1, s2):
 
     return s
 
-def main(config=config):
-    n_star = config['n_star']
+def generate_outname_from_config(config):
+    n_star = config.getint('n_star')
+    v1 = config.getfloat('v1')
+    v2 = config.getfloat('v2')
+    sigma = config.getfloat('sigma')
+
+    dist = config.getfloat('dist')
+    r_sphere = config.getfloat('r_sphere')
     stem = config['stem']
 
-    v1_sign = get_char_sign(config['v1'])
-    v2_sign = get_char_sign(config['v2'])
+    outname = generate_outname(stem, n_star, r_sphere, dist, v1, v2, sigma)
+    return outname
 
-    outname = f"{stem}_n{n_star}_r{config['r_sphere']}d{config['dist']}V{v1_sign}{config['v1']}{v2_sign}{config['v2']}_s{config['sigma']}.snap"
+def generate_outname(stem, n_star, r_sphere, dist, v1, v2, sigma):
+    v1_sign = get_char_sign(v1)
+    v2_sign = get_char_sign(v2)
+    outname = f"{stem}N{n_star}r{r_sphere}d{dist}V{v1_sign}{np.abs(v1)}{v2_sign}{np.abs(v2)}s{sigma}.snap"
+    return outname
+
+def generate_snap(config):
+    n_star = config.getint('n_star')
+    particle_mass = config.getfloat('particle_mass')
+    v1 = config.getfloat('v1')
+    v2 = config.getfloat('v2')
+    sigma = config.getfloat('sigma')
+
+    dist = config.getfloat('dist')
+    r_sphere = config.getfloat('r_sphere')
+    boxsize = config.getfloat('boxsize')
+    stem = config['stem']
+
+    outname = generate_outname(stem, n_star, r_sphere, dist, v1, v2, sigma)
+
     print(f"Writing to {outname}")
     if os.path.isfile(outname):
-        if config['overwrite']:
+        if config.getboolean('overwrite'):
             print(f"Removing {outname} to create a new one...")
             os.remove(outname)
         else:
             raise RuntimeError("File {outname} already exists. Use 'overwrite' or use a different name")
 
-    f1 = create_snap(v=config['v1'], **config)
-    f2 = create_snap(v=config['v2'], **config)
+    # f1 = create_sphere_snap(v=v1, **config)
+    # f2 = create_sphere_snap(v=v2, **config)
+    f1 = create_cube_snap(n_star=n_star, r_sphere=r_sphere, v=v1, sigma=sigma, particle_mass=particle_mass)
+    f2 = create_cube_snap(n_star=n_star, r_sphere=r_sphere, v=v2, sigma=sigma, particle_mass=particle_mass)
 
     # offset along x
-    f1['pos'][:,0] -= config['dist']/2
-    f2['pos'][:,0] += config['dist']/2
+    f1['pos'][:,0] -= dist/2
+    f2['pos'][:,0] += dist/2
 
     f = join_snaps(f1, f2)
 
-    f.properties['boxsize'] = config['boxsize'] * pynbody.units.kpc
+    f.properties['boxsize'] = boxsize * pynbody.units.kpc
     print(f.properties)
 
     # generate smooth
 
     # pynbody.config['sph']['smooth-particles'] = 1
     # pynbody.config['sph']['tree-leafsize'] = 1
-    if config['smooth'] is None:
-        print('smooth:', f['smooth'])
+    # print(config['smooth'])
+    if config['smooth'] is None or config['smooth']=='':
+        # This actually creates the smooth array
+        f['smooth']
     else:
-        f['smooth'] = SimArray(np.array(config['smooth']*len(f)), units='kpc')
+        f['smooth'] = SimArray(np.array([config.getfloat('smooth')]*len(f)), units='kpc')
+    print('smooth:', f['smooth'])
 
     f.write(filename=outname, fmt=pynbody.snapshot.gadget.GadgetSnap)
     return f
 
+def main(cli=None):
+    parser = ArgumentParser()
+    parser.add_argument(dest='configfile', help="Path to the configuration file")
+    args = parser.parse_args(cli)
+
+    configurator = ConfigParser(allow_no_value=True)
+    configurator.read(args.configfile)
+    config = configurator['toysnap']
+    # print(dict(config))
+    f = generate_snap(config)
+
 if __name__ == '__main__':
-    f = main(config)
+    f = main()
