@@ -11,7 +11,7 @@ def main(cli=None):
 
     configurator = ConfigParser()
     configurator.read(args.configfile)
-    print(configurator)
+
     config_toy = configurator['toysnap']
     config_ifu = configurator['IFU']
 

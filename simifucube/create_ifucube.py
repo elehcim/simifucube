@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import os
 import warnings
 from configparser import ConfigParser
 from argparse import ArgumentParser
@@ -15,50 +15,13 @@ from simifucube.cube_generator import CubeGenerator
 from simifucube.write_cube import write_cube
 from simifucube.util.der_snr import DER_SNR
 
-
-
-# config = dict(
-# use_template_star=True,
-# do_preprocessing=False,
-
-# num_threads=1,
-
-# size_cuboid = 10,
-
-# bins = 10,
-# do_spectral_rebinning=True,
-
-# output_LOS_sum=False,
-# output_SPH_projection=True,
-
-# do_noise=False,
-# STAT_HDU=True,
-
-# # We defined the contamination range (the dispersion) in a way that the residuals
-# # between the constructed spectrum and the original spectrum of
-# # the library to be less than ~ 0.073.
-# sigma=0.07,
-
-# # I/O
-# # snap_name = 'toy_snap_cloud_n1000_r1d4Vp20m-500_s100.snap',
-# snap_name = 'toySnapCloudCubeN1000r1d4Vp20m500s100.snap',
-# out_name='toycubedistribCubeNONOISE', #8particlesVm60p80NONOISE'
-# pickle_name = 'toy_distribution.pkl',
-# )
-
-# I/O
-# snap_name = 'toy_snap_distribution.snap'
-# snap_name = 'toy_snap_d4.0_M1e4_sm1'
-# snap_name = 'toy_snap_d3_M1e4_sm1'
-
-# snap_name = 'toy_snap_multi_Vm60p80'
-# pynbody.config['sph']['smooth-particles'] = 2
-# pynbody.config['sph']['tree-leafsize'] = 1
-
 def generate_cube(config):
     out_name = config['out_name']
     bins = config.getint('bins')
     size_cuboid = config.getint('size_cuboid')
+
+    if out_name is None or out_name=='':
+        out_name = os.path.splitext(config['snap_name'])[0] + 'r{}pix{}.fits'.format(size_cuboid,bins)
 
     snsp = SnapSpectra(config['snap_name'],
                        size_cuboid=size_cuboid,
@@ -77,7 +40,7 @@ def generate_cube(config):
         print('datacube max flux', np.max(cg.datacube))
 
         cube = cg.create_spectral_cube()
-        sum_outname = out_name + 'pix{}_sum.fits'.format(bins)
+        sum_outname = os.path.splitext(out_name)[0] + 'sum.fits'
         print(f'Writing cube {sum_outname}')
         cube.write(sum_outname, overwrite=True)
 
@@ -131,7 +94,7 @@ def generate_cube(config):
     warnings.simplefilter('ignore', category=VerifyWarning)
     write_cube(muse_cube,
                variance_cube=variance_cube,
-               filename=out_name+'r{}pix{}.fits'.format(size_cuboid,bins),
+               filename=out_name,
                meta=dict(config),
                overwrite=True)
 
