@@ -19,6 +19,7 @@ def vz_normal(n_star, v_mean, sigma):
     vel = np.vstack([zeros,zeros,vz]).T
     return vel
 
+
 def create_sphere_of_positions(n, R):
     phi = np.random.uniform(0, 2 * np.pi, n)
     costheta = np.random.uniform(-1, 1, n)

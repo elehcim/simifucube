@@ -3,7 +3,7 @@ import tqdm
 import pynbody
 from astropy.wcs import WCS
 import time
-from simifucube.create_noisy_cube import get_header
+from simifucube.examples.create_noisy_cube import get_header
 from spectral_cube import SpectralCube, LazyMask
 from scipy.stats import binned_statistic_2d
 from simifucube.render_cube import render_cube

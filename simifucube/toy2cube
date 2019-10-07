@@ -1,0 +1,5 @@
+#!/bin/bash
+
+config=$1
+create_particle_distribution_toysnap $config
+create_ifucube $config

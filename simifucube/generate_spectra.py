@@ -1,14 +1,15 @@
-import pynbody
-
-import tqdm
-import numpy as np
+import gc
 import pickle
+
+import astropy.units as u
+import numpy as np
+import pynbody
+import tqdm
+from simulation.angmom import sideon  # TODO use pynbody, so that I remove the dependency on simulation
+from specutils import Spectrum1D
+
 from simifucube.spectra import Spectrum
 from simifucube.util.congrid import congrid
-from specutils import Spectrum1D
-import astropy.units as u
-import gc
-from simulation.angmom import sideon  # TODO use pynbody, so that I remove the dependency on simulation
 
 MUSE_LIMITS = {'start': 4750, 'stop': 9600, 'step': 1.25}
 MUSE_WVL = np.arange(**MUSE_LIMITS)

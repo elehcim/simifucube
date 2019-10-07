@@ -108,8 +108,8 @@ def get_spectral_kernelwidth(spectral_axis_resolution, delta_lambda=DELTA_LAMBDA
 
 
 def create_single_spectra_cube(bins, mask=None, header=None, wcs=None):
-    from generate_spectra import STD_MET, STD_AGE, to_spectrum1d
-    from spectra import Spectrum
+    from simifucube.generate_spectra import STD_MET, STD_AGE, to_spectrum1d
+    from simifucube.spectra import Spectrum
     mass = 8000  # Msol
     print('Creating cube from a particle with age{}, met={}, mass={} Msol'.format(STD_AGE, STD_MET, mass))
 

@@ -6,23 +6,6 @@ from argparse import ArgumentParser
 from pynbody.array import SimArray
 from simifucube.toy_snap.particle_cloud import create_sphere_of_positions, create_box_vz_normal, vz_normal
 
-# config = dict(
-# n_star=1000,  # number of stars per bunch
-
-# particle_mass = 1e4,  # Msun
-# boxsize = 1000,
-
-# overwrite=True,
-
-# stem='toySnapCloudCube',
-# v1=20,
-# v2=-500,
-# sigma=100,
-# smooth=None,
-# dist=4,
-# r_sphere=0.5,   # radius of the spherical cloud or the radius of the sphere inscribed into the box
-# )
-
 
 STD_PROPERTIES = dict(a=1.0,
                       z=0,
@@ -35,7 +18,6 @@ STD_PROPERTIES = dict(a=1.0,
 def get_char_sign(x):
     return 'm' if x < 0 else 'p'
 
-# Create clouds of stars uniformly distributed in a sphere with a gaussian distribution of velocities around a given mean.
 
 
 def get_all_keys(snap):
@@ -48,6 +30,7 @@ def get_all_keys(snap):
     return ak
 
 def create_sphere_snap(n_star, r_sphere, v, sigma, particle_mass, **kwargs):
+    """reate clouds of stars uniformly distributed in a sphere with a gaussian distribution of velocities around a given mean."""
     f = pynbody.new(star=n_star)
 
     pos = create_sphere_of_positions(n_star, r_sphere)
@@ -163,7 +146,7 @@ def generate_snap(config):
     # pynbody.config['sph']['smooth-particles'] = 1
     # pynbody.config['sph']['tree-leafsize'] = 1
     # print(config['smooth'])
-    if config['smooth'] is None or config['smooth']=='':
+    if config['smooth'] is None or config['smooth'] == '':
         # This actually creates the smooth array
         f['smooth']
     else:

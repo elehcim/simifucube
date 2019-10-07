@@ -5,7 +5,6 @@ from configparser import ConfigParser
 from argparse import ArgumentParser
 
 import numpy as np
-import pynbody
 from astropy.io.fits.verify import VerifyWarning
 
 from spectral_cube import SpectralCube
