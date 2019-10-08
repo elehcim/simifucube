@@ -29,7 +29,7 @@ from libc.math cimport atan, pow
 from libc.stdlib cimport malloc, free
 
 # The following slightly odd repetitiveness is to force Cython to generate
-# code for different permutations of the possible integer inputs.
+# code for different permutations of the possible float inputs.
 #
 # Using just one fused type requires the types to be consistent across all
 # arguments.
@@ -121,6 +121,7 @@ def render_cube(int nx, int ny,  # number of pixel
     # cdef float dz_i
 
     cdef int kernel_dim = kernel.h_power
+    # kernel.max_d is the maximum value of the displacement over the smoothing for which the kernel is non-zero
     cdef fixed_input_type max_d_over_h = kernel.max_d
 
 
@@ -128,6 +129,11 @@ def render_cube(int nx, int ny,  # number of pixel
     cdef int num_samples = len(samples)
     cdef image_output_type* samples_c = <image_output_type*>samples.data
     cdef image_output_type sm_to_kdim   # minimize casting when same type as output
+
+    cdef image_output_type* kernel_weigth = <image_output_type *> malloc(num_threads * n_part * sizeof(image_output_type))
+    printf("num_samples=%i\n", num_samples)
+    # for n in range(num_samples):
+    #     printf("%.4g, ", samples_c[n])
 
     cdef fixed_input_type kernel_max_2 # minimize casting when same type as input
 
@@ -144,10 +150,15 @@ def render_cube(int nx, int ny,  # number of pixel
     # cdef np.ndarray[image_output_type,ndim=2] qty_i = np.zeros((n_part, n_channel), dtype=np_image_output_type)
 
     printf("kernel_dim=%d\n",  kernel_dim)
+    printf("kernel_max_d_over_h=%f\n",  max_d_over_h)
     printf("n_part=%d\n",  n_part)
     printf("n_channel=%d\n", n_channel)
     printf("nx=%d\n", nx)
     printf("ny=%d\n", ny)
+    printf("pixel_dx=%f\n", pixel_dx)
+    printf("pixel_dy=%f\n", pixel_dy)
+    printf("x_start=%f\n", x_start)
+    printf("y_start=%f\n", y_start)
     printf("x1=%f\n", x1)
     printf("x2=%f\n", x2)
     printf("y1=%f\n", y1)
@@ -168,17 +179,20 @@ def render_cube(int nx, int ny,  # number of pixel
     for i in prange(n_part, nogil=True, num_threads=num_threads):
         tid = threadid()
 
-        if i % 100 == 0:
-            printf("Particle %d/%d (%.2f%%)\r", i, n_part, (<double>i)/n_part*100)
+        # if i % 100 == 0:
+        #     printf("Particle %d/%d (%.2f%%)\r", i, n_part, (<double>i)/n_part*100)
 
         # load particle details
         x_i = x[i]
         y_i = y[i]
         z_i = z[i]
         sm_i = sm[i]
+        printf("P=%4i, x=%.4g, y=%.4g, z=%.4g, sm=%.4g\n", i, x_i, y_i, z_i, sm_i)
         for j in range(n_channel):
             qty_i[tid*n_channel + j] = qty[i, j]*mass[i]/rho[i]
 
+        # for j in range(10):
+        #     printf('%f\n', qty_i[tid*n_channel + j])
         # if z_camera!=0.0 :
         #     # perspective image -
         #     # update image bounds for the current z
@@ -233,25 +247,39 @@ def render_cube(int nx, int ny,  # number of pixel
             # only 2, 3 supported
 
         kernel_max_2 = (sm_i*sm_i)*(max_d_over_h*max_d_over_h)
-
+        printf("kernel_max_2=%g, sm_to_kdim=%g\n", kernel_max_2, sm_to_kdim)
 
         # decide whether this is a single pixel or a multi-pixel particle
         if (max_d_over_h*sm_i/pixel_dx<1 and max_d_over_h*sm_i/pixel_dy<1) :
-            # printf("Single pixel Particle %d\n",i)
+            printf("Single pixel Particle %d\n",i)
             # single pixel, get pixel location
             x_pos = int((x_i-x1)/pixel_dx)
             y_pos = int((y_i-y1)/pixel_dy)
-
-            # work out pixel centre
-            x_pixel = (pixel_dx*<fixed_input_type>(x_pos)+x_start)
-            y_pixel = (pixel_dy*<fixed_input_type>(y_pos)+y_start)
+            # printf("x_i=%.4g, y_i=%.4g\n", x_i, y_i)
+            printf("x_pos=%i, y_pos=%i\n", x_pos, y_pos)
 
             # final bounds check
             if x_pos>=0 and x_pos<nx and y_pos>=0 and y_pos<ny :
                 for j in range(n_channel):
-                    result_local[tid,y_pos,x_pos,j]+=qty_i[tid*n_channel + j]*get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c)
+                    result_local[tid,y_pos,x_pos,j]+=qty_i[tid*n_channel + j]
+
+            # # work out pixel centre
+            # x_pixel = (pixel_dx*<fixed_input_type>(x_pos)+x_start)
+            # y_pixel = (pixel_dy*<fixed_input_type>(y_pos)+y_start)
+            # printf("x_pixel=%.4g, y_pixel=%.4g\n", x_pixel, y_pixel)
+
+
+            # # final bounds check
+            # if x_pos>=0 and x_pos<nx and y_pos>=0 and y_pos<ny :
+            #     kernel_weigth[tid * n_part + i] = get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c)
+            #     printf("kernel_weigth=%g\n", kernel_weigth[tid * n_part + i])
+            #     for j in range(n_channel):
+            #         # printf("%f   ", qty_i[tid*n_channel + j])
+            #         # printf("%f\n", get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c))
+            #         # result_local[tid,y_pos,x_pos,j]+=qty_i[tid*n_channel + j]*get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c)
+            #         result_local[tid,y_pos,x_pos,j]+=qty_i[tid*n_channel + j]*kernel_weigth[tid * n_part + i]
         else :
-            # printf("Multi-pixel Particle %d \n",i)
+            printf("Multi-pixel Particle %d \n",i)
             # multi-pixel
             x_pix_start = int((x_i-max_d_over_h*sm_i-x1)/pixel_dx)
             x_pix_stop =  int((x_i+max_d_over_h*sm_i-x1)/pixel_dx)
@@ -277,10 +305,14 @@ def render_cube(int nx, int ny,  # number of pixel
                     # disappears from the compiled version in the
                     # instance described above.  Anyway for now, there
                     # is no advantage to the manual approach -
+                    kernel_weigth[tid * n_part + i] = get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c)
 
                     #c_result[x_pos+nx*y_pos]+=qty_i*get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c)
                     for j in range(n_channel):
-                        result_local[tid,y_pos,x_pos,j]+=qty_i[tid*n_channel + j]*get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c)
+                        # printf("%f\n", qty_i[tid*n_channel + j])
+                        # printf("%f\n", get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c))
+                        # result_local[tid,y_pos,x_pos,j]+=qty_i[tid*n_channel + j]*get_kernel_xyz(x_i-x_pixel, y_i-y_pixel, (z_i-z_pixel)*use_z, kernel_max_2 ,sm_to_kdim,num_samples,samples_c)
+                        result_local[tid,y_pos,x_pos,j]+=qty_i[tid*n_channel + j]*kernel_weigth[tid * n_part + i]
 
     free(qty_i)
 
