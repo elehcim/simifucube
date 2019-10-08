@@ -1,9 +1,0 @@
-numpy
-pandas
-scipy
-cython
-astropy
-spectral-cube
-specutils
-ipython
-pynbody
