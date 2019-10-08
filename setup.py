@@ -24,7 +24,7 @@ setup(name='simifucube',
       author='Michele Mastropietro',
       author_email='michele.mastropietro@ugent.be',
       install_requires=['pynbody', 'astropy', 'pandas', 'matplotlib',
-                        'numpy', 'specutils', 'spectral-cube'],
+                        'numpy', 'specutils', 'spectral-cube', 'tqdm'],
       packages=['simifucube', 'simifucube.toy_snap', 'simifucube.util'],
       scripts=['simifucube/toy_snap/create_two_particles_toy_snap.py','simifucube/toy2cube'],
       # TODO make _render compilation automatic

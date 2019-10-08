@@ -22,7 +22,8 @@ import astropy.units as u
 import numpy as np
 import pynbody
 import tqdm
-from simulation.angmom import sideon  # TODO use pynbody, so that I remove the dependency on simulation
+# from simulation.angmom import sideon  # TODO use pynbody, so that I remove the dependency on simulation
+from pynbody.analysis.angmom import sideon
 from specutils import Spectrum1D
 
 from simifucube.spectra import Spectrum
@@ -35,7 +36,7 @@ L_sol_in_erg_per_s = 3.839e33  # erg s-1
 kpc_in_cm = 3.086e+21  # cm
 
 conv_fact = L_sol_in_erg_per_s / (4 * np.pi * kpc_in_cm**2)  # Lsol cm-2 ~ erg s-1 cm-2
-print('conv_fact=',conv_fact)
+
 def compute_intensity(spectra, filt):
     intensity = list()
     for sp in spectra:
