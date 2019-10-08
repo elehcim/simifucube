@@ -1,7 +1,5 @@
 # This file is part of Simifucube.
 #
-# Adapted from https://scipy-cookbook.readthedocs.io/items/Rebinning.html
-#
 # Copyright (C) 2006-2019 DavidLinke, AngusMcMorland, PauGargallo
 # Copyright (C) 2019 Michele Mastropietro (michele.mastropietro@gmail.com)
 #
@@ -21,6 +19,8 @@
 import numpy as np
 import scipy.interpolate
 import scipy.ndimage
+
+# Adapted from https://scipy-cookbook.readthedocs.io/items/Rebinning.html
 
 def congrid(a, newdims, method='linear', centre=False, minusone=False):
     '''Arbitrary resampling of source array to new dimension sizes.

@@ -1,7 +1,5 @@
 # This file is part of Simifucube.
 #
-# Adapted from www.stecf.org/software/ASTROsoft/DER_SNR/
-#
 # Copyright (C) 2007-2019 Felix Stoehr, ST-ECF (fstoehr@eso.org)
 # Copyright (C) 2019 Michele Mastropietro (michele.mastropietro@gmail.com)
 #
@@ -17,6 +15,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Simifucube.  If not, see <https://www.gnu.org/licenses/>.
+
+
+# Adapted from www.stecf.org/software/ASTROsoft/DER_SNR/
 
 def DER_SNR(flux):
 
