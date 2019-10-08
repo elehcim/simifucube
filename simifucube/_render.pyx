@@ -1,3 +1,21 @@
+# This file is part of Simifucube.
+#
+# Copyright (C) 2013-2019 The Pynbody team (ascl:1305.002, site: https://github.com/pynbody/pynbody)
+# Copyright (C) 2019 Michele Mastropietro (michele.mastropietro@gmail.com)
+#
+# Simifucube is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Simifucube is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Simifucube.  If not, see <https://www.gnu.org/licenses/>.
+
 import numpy as np
 
 cimport numpy as np
