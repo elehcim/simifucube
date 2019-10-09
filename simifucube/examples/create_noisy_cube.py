@@ -22,6 +22,7 @@ SIM_PATH = '/home/michele/sim/MySimulations/ng'
 
 HEADER_SOURCE = '/home/michele/sim/IFU_images/dataset/NGC1427A/ADP.2016-06-14T15:15:54.554.fits'
 
+
 def get_header(data_source=HEADER_SOURCE):
     print('Getting template header from', data_source)
     with fits.open(data_source) as hdulist:

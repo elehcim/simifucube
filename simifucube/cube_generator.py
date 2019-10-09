@@ -15,15 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with Simifucube.  If not, see <https://www.gnu.org/licenses/>.
 
-import numpy as np
-import tqdm
-import pynbody
-from astropy.wcs import WCS
 import time
-from simifucube.examples.create_noisy_cube import get_header
-from spectral_cube import SpectralCube, LazyMask
+
+import numpy as np
+import pynbody
+import tqdm
+from astropy.io import fits
+from astropy.wcs import WCS
 from scipy.stats import binned_statistic_2d
+from spectral_cube import SpectralCube, LazyMask
+
 from simifucube.render_cube import render_cube
+
+HEADER_SOURCE = '/home/michele/sim/IFU_images/dataset/NGC1427A/ADP.2016-06-14T15:15:54.554.fits'
+
+
+def get_header(data_source=HEADER_SOURCE):
+    print('Getting template header from', data_source)
+    with fits.open(data_source) as hdulist:
+        _header = hdulist[1].header
+    return _header
+
 
 class CubeGenerator:
     def __init__(self, snap_spectra, bins):
@@ -48,8 +60,6 @@ class CubeGenerator:
         for i in tqdm.tqdm(self.n_channels):
             self.star_snap['sp_ch{:06d}'.format(i)] = self.snap_spectra.spectrum.flux[:,i]
         self._spectra_channels_assigned = True
-
-
 
     def sph_projection_direct(self, num_threads=None):
         t0 = time.time()
@@ -76,7 +86,6 @@ class CubeGenerator:
 
         self.datacube = im_cube.transpose(2, 0, 1)
         return self.datacube
-
 
     def sph_projection(self):
         if not self._spectra_assigned:
