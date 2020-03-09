@@ -163,20 +163,49 @@ def get_spectrum(filename, n_limit=ELEMENT_LIMIT):
 #     return pd.read_csv('out_phot_CH_BASTI.txt', delim_whitespace=True)
 
 
-MgFe_corr = -0.261299
+# To avoid log(0). np.nan are possible too, but checks when interpolating have to be changed too.
+NA_VALUE_FEH = -98.0
+NA_VALUE_MGFE = 0.471782
+
+MgFe_corr = -0.261299  # from Hyplot: log10(M_mgsol/M_fesol) = -0.261299, source: Grevesse et al. 2007 en 2010
 FeH_corr = -2.756433
 
-@pynbody.derived_array
-def mgfe(snap):
-    arr = np.log10(snap.s['mgst']/snap.s['fest']) - MgFe_corr
-    arr[np.logical_or(snap.s['mgst'] == 0.0, snap.s['fest'] == 0.0)] = 0.471782
-    return arr
+def _get_ftype(snap):
+    if snap._unifamily is pynbody.family.star:
+        return 'st'
+    elif snap._unifamily is pynbody.family.gas:
+        return 'sp'
+    else:
+        return None
+
 
 @pynbody.derived_array
-def feh(snap):
-    arr = np.log10(snap.s['fest']/snap.s['mass']) - FeH_corr
-    arr[np.logical_or(snap.s['fest'] == 0.0, snap.s['mass'] == 0.0)] = -98.0
+def feh(snap, na_value=NA_VALUE_FEH):
+    ftype = _get_ftype(snap)
+    if not ftype:
+        raise RuntimeError("Derived array 'feh' is available only for family gas or star")
+    name = 'fe' + ftype
+    # arr = np.log10(snap[name]/snap['mass']) - FeH_corr
+    out = np.ones_like(snap[name].view(np.ndarray))  # ones_like so that log10 does not complain
+    na_value_condition = np.logical_or(snap[name] == 0.0, snap['mass'] == 0.0)
+    arr = np.log10(np.divide(snap[name], snap['mass'], out=out, where=np.logical_not(na_value_condition))) - FeH_corr
+    arr[na_value_condition] = na_value  # -98.0
     return arr
+
+
+@pynbody.derived_array
+def mgfe(snap, na_value=NA_VALUE_MGFE):
+    ftype = _get_ftype(snap)
+    if not ftype:
+        raise RuntimeError("Derived array 'mgfe' is available only for family gas or star")
+    name = 'mg' + ftype
+    # arr = np.log10(snap[name]/snap['fe' + ftype]) - MgFe_corr
+    out = np.ones_like(snap[name].view(np.ndarray))  # ones_like so that log10 does not complain
+    na_value_condition = np.logical_or(snap[name] == 0.0, snap['fe' + ftype] == 0.0)
+    arr = np.log10(np.divide(snap[name], snap['fe' + ftype], out=out, where=np.logical_not(na_value_condition))) - MgFe_corr
+    arr[na_value_condition] = na_value # 0.471782
+    return arr
+
 
 class Spectrum:
     filename = None
