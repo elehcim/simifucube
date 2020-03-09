@@ -17,7 +17,7 @@
 
 import os
 import warnings
-from configparser import ConfigParser
+from configparser import ConfigParser, NoSectionError
 from argparse import ArgumentParser
 
 import numpy as np
@@ -121,9 +121,13 @@ def main(cli=None):
     configurator = ConfigParser()
     configurator.read(args.configfile)
     config = configurator['IFU']
+    try:
+        general = configurator.get('general', False)
+        if general and general.getboolean('pipe'):
+            config['snap_name'] = generate_outname_from_config(configurator['toycube'])
 
-    if configurator['general'].getboolean('pipe'):
-        config['snap_name'] = generate_outname_from_config(configurator['toycube'])
+    except NoSectionError:
+        pass
 
     print(dict(config))
     generate_cube(config)
