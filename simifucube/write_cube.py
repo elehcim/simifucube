@@ -18,7 +18,6 @@
 import subprocess
 from astropy.io import fits
 
-
 def contract_name(stem, sim, isnap, peri, r, ext, bins=None, fix=False, doppler_shift=True, **kwargs):
     sim_str = str(sim)[:2]
     f = "{}_{}p{:g}_{:04d}_r{}".format(stem, sim_str, peri/100, isnap, r)
@@ -34,7 +33,6 @@ def contract_name(stem, sim, isnap, peri, r, ext, bins=None, fix=False, doppler_
     return f
 
 
-
 def cd_keyword(header):
     for i in range(1, 4):
         header['CD{0}_{0}'.format(i)] = header['CDELT{}'.format(i)]
@@ -42,18 +40,41 @@ def cd_keyword(header):
 
 
 def get_git_version():
-    label = subprocess.check_output(["git", "describe", "--tags", "--dirty"]).strip().decode()
+    label = ''
+    try:
+        label = subprocess.check_output(["git", "describe", "--tags", "--dirty"], stderr=subprocess.STDOUT).strip().decode()
+    except subprocess.CalledProcessError:
+        print(label)
+        label = 'NO_VERSION'
     return label
 
+def sanitize_cards(d, max_len=50):
+    meta = d.copy()
+    new_keys = dict()
+    doomed_keys = list()
+    for k, v in meta.items():
+        if len(v) > max_len:
+            doomed_keys.append(k)
+            i = 1
+            while len(v) > max_len:
+                new_keys[k + f"_{i}"] = v[: max_len]
+                v = v[max_len:]
+            # last piece:
+            new_keys[k + f"_{i}"] = v
+    # print(doomed_keys)
+    for _k in doomed_keys:
+        del meta[_k]
+    meta.update(new_keys)
+    return meta
 
 def write_cube(cube, variance_cube, filename, overwrite=False, meta=None):
     print('Writing cube {}'.format(filename))
     hdulist = fits.HDUList([fits.PrimaryHDU()])
     hdulist[0].header['SWMASTRO'] = get_git_version()
     if meta is not None and isinstance(meta, dict):
-        for k, v in meta.items():
+        mymeta = sanitize_cards(meta)
+        for k, v in mymeta.items():
             hdulist[0].header[k] = v
-
 
     hdulist.append(cube.hdu)
     hdulist[1].name = 'DATA'
