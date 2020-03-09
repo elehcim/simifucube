@@ -258,7 +258,7 @@ class SnapSpectra:
         data = pickle.load(open(pickle_name, "rb"))
         n_spectra = len(data['flux'])
         print('Got {} spectra...'.format(n_spectra))
-        assert n_spectra == self.n_stars
+        assert n_spectra == self.n_stars, "Number of spectra from pickle file are different from n_stars from snapshot"
         self.spectrum = Spectrum1D(spectral_axis=data['wvl'], flux=data['flux'])
         self.pos = data['pos']
         self.last_valid_freq = data['last_valid_freq']
