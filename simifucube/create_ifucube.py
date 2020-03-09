@@ -42,11 +42,13 @@ def generate_cube(config):
                        size_cuboid=size_cuboid,
                        do_preprocessing=config.getboolean('do_preprocessing'))
 
-    snsp.generate_spectra(save_as=config['pickle_name'],
-                          use_template_star=config.getboolean('use_template_star'))
+    if config.getboolean('use_saved_spectra'):
+        snsp.generate_spectra_from_pickle(config['pickle_name'])
+    else:
+        snsp.generate_spectra(save_as=config['pickle_name'],
+                              use_template_star=config.getboolean('use_template_star'))
     # print(snsp._preprocessed_snap['smooth'])
     # print(snsp._preprocessed_snap['mass'])
-    # snsp.generate_spectra_from_pickle(pickle_name)
 
     cg = CubeGenerator(snsp, bins=bins)
 
