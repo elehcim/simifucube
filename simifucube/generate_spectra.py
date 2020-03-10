@@ -23,7 +23,6 @@ import numpy as np
 import pynbody
 import tqdm
 # from simulation.angmom import sideon  # TODO use pynbody, so that I remove the dependency on simulation
-from pynbody.analysis.angmom import sideon
 from specutils import Spectrum1D
 
 from simifucube.spectra import Spectrum
@@ -194,10 +193,9 @@ def snap_preprocess(snap, size_cuboid):
 
     s_sphere = snap[sphere]
 
-    # pynbody.analysis.angmom.sideon(s_sphere.s)
     print("Computing angular momentum...")
-    sideon(s_sphere.s, cen=(0,0,0))
-    print("Selecting a cuboid size {:} kpc".format(size_cuboid))
+    pynbody.analysis.angmom.sideon(s_sphere.s, cen=(0,0,0))
+    print(f"Selecting a cuboid size {size_cuboid} kpc (full edge of {size_cuboid*2} kpc)")
 
     cuboid = pynbody.filt.Cuboid(-size_cuboid)
     s = s_sphere[cuboid]
