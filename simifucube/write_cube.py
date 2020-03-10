@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Simifucube.  If not, see <https://www.gnu.org/licenses/>.
 
+import os
 import subprocess
 from astropy.io import fits
 
@@ -41,8 +42,11 @@ def cd_keyword(header):
 
 def get_git_version():
     label = ''
+    cwd = os.path.dirname(__file__)
     try:
-        label = subprocess.check_output(["git", "describe", "--tags", "--dirty"], stderr=subprocess.STDOUT).strip().decode()
+        label = subprocess.check_output(["git", "describe", "--tags", "--dirty"],
+                                        stderr=subprocess.STDOUT,
+                                        cwd=cwd).strip().decode()
     except subprocess.CalledProcessError:
         print(label)
         label = 'NO_VERSION'
