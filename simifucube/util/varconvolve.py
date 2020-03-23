@@ -1,6 +1,6 @@
 # Copyright 2016-2020 Janez Kos, Michele Mastropietro
 # Adapted from https://github.com/sheliak/varconvolve
-# Licenced under GPLv3
+# Licensed under GPLv3
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -25,15 +25,10 @@ def _gaussian_kernel(s):
     return g / np.sum(g)
 
 
-import line_profiler
-import atexit
-profile = line_profiler.LineProfiler()
-atexit.register(profile.print_stats)
-@profile
 def varconvolve(x, y, kernel, var, oversample=1, mode='same'):
     """
     x: an array with x coordinates of the points
-    y: ana rray with y coordinates of the points
+    y: an array with y coordinates of the points
     kernel: name of the function that describes the kernel. Must have one argument, the width of the kernel in x units
     var: a function that returns the kernel width in one point.
     """
@@ -57,6 +52,7 @@ def varconvolve(x, y, kernel, var, oversample=1, mode='same'):
 
     m = np.max(var(x))
 
+    # In practice x_new[n+1] - x_new[x] = var(x_new[n]) * dx_old * factor
     while x_new[n] + var(x_new[n]) / m / oversample * sampl <= x[-1]:
         x_new.append(x_new[n] + var(x_new[n]) / m / oversample * sampl)
         n += 1
@@ -72,6 +68,10 @@ def varconvolve(x, y, kernel, var, oversample=1, mode='same'):
     y_out = np.interp(x,x_new,y_con)
 
     return y_out
+
+
+
+
 
 if __name__ == '__main__':
     import numpy as np

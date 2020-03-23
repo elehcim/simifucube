@@ -302,15 +302,9 @@ def _muse_spectral_resolution_sigma_udf10(l):
     sigma = fwhm_factor * 5.866e-8 * l**2 - 9.187e-4 * l + 6.040
     return sigma
 
-
-# from simifucube.generate_spectra import _muse_spectral_resolution_fwhm_udf10
-# def my_varconvolve(y, **kwargs):
-#     from simifucube.util.varconvolve import varconvolve, gaussian_kernel
-#     from astropy.convolution import Gaussian1DKernel
-
-#     # print("Convolving with MUSE line spread function...")
-#     # print(*args)
-#     return varconvolve(self.spectral_axis.view(np.ndarray), y, kernel=gaussian_kernel, var=_muse_spectral_resolution_sigma_udf10)
+def _test_var(l):
+    sigma = np.where(l>6000, 1, 100)
+    return sigma
 
 from astropy.convolution import Gaussian1DKernel
 def my_kernel(s):
@@ -321,8 +315,6 @@ def muse_spectral_smooth(cube):
     from simifucube.util.varconvolve import varconvolve, _gaussian_kernel
 
     print("Convolving with MUSE line spread function...")
-    # muse_cube = cube.spectral_smooth(kernel=Gaussian1DKernel(), parallel=False, convolve=varconvolve, kernel= var=_muse_spectral_resolution_sigma_udf10)
-
-    muse_cube = cube.spectral_smooth_variable_width(kernel=my_kernel, parallel=True, num_cores=8)
+    muse_cube = cube.spectral_smooth_variable_width(convolve=varconvolve, kernel=my_kernel, var=_muse_spectral_resolution_sigma_udf10, parallel=False, num_cores=8)
     return muse_cube
 
