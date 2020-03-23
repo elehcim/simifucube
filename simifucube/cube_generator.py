@@ -36,6 +36,49 @@ def get_header(data_source=HEADER_SOURCE):
         _header = hdulist[1].header
     return _header
 
+class MySpectralCube(SpectralCube):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def spectral_smooth_variable_width(self, convolve, kernel, var,
+                        verbose=0,
+                        use_memmap=True,
+                        num_cores=None,
+                        **kwargs):
+        """
+        Smooth the cube along the spectral dimension with a variable smoothing kernel
+
+        Note that the mask is left unchanged in this operation.
+
+        Parameters
+        ----------
+        convolve : function(spectrum, kernel, var)
+            Operates on the spectra the spectrum values,
+        kernel : np.array
+            A 1D kernel array
+        verbose : int
+            Verbosity level to pass to joblib
+        use_memmap : bool
+            If specified, a memory mapped temporary file on disk will be
+            written to rather than storing the intermediate spectra in memory.
+        num_cores : int or None
+            The number of cores to use if running in parallel
+        kwargs : dict
+            Passed to the convolve function
+        """
+        def my_convolve(y, kernel=kernel, **kwargs):
+            return convolve(self.spectral_axis.view(np.ndarray), y, kernel=kernel, var=var)
+
+        # convolve = kwargs.get('my_convolve', convolve)
+        return self.apply_function_parallel_spectral(my_convolve,
+                                                     kernel=kernel,
+                                                     normalize_kernel=True,
+                                                     num_cores=num_cores,
+                                                     use_memmap=use_memmap,
+                                                     verbose=verbose,
+                                                     **kwargs)
+
+
 
 class CubeGenerator:
     def __init__(self, snap_spectra, bins):
@@ -146,7 +189,7 @@ class CubeGenerator:
             mask = LazyMask(np.isfinite, data=self.datacube, wcs=wcs)
 
         print('Creating cube...')
-        cube = SpectralCube(data=self.datacube.astype(np.float32) * spectra1d.flux.unit,
+        cube = MySpectralCube(data=self.datacube.astype(np.float32) * spectra1d.flux.unit,
                             wcs=wcs,
                             mask=mask,
                             header=header)

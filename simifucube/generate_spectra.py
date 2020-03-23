@@ -294,6 +294,11 @@ def muse_rebin(last_valid_freq, cube):
     muse_cube = cube.spectral_interpolate(new_bins)
     return muse_cube
 
+
+
+###########
+# Muse Line spread function convolution
+
 from numba import jit
 @jit
 def _muse_spectral_resolution_sigma_udf10(l):
