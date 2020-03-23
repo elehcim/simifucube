@@ -19,7 +19,7 @@ def _gaussian_kernel(s):
     # x= np.mgrid[-size_grid:size_grid+1]
     # print(x)
 
-    x= np.arange(-size_grid, size_grid+1)
+    x = np.arange(-size_grid, size_grid+1)
     # print(x)
     g = np.exp(-(x**2/float(s**2)/2.))
     return g / np.sum(g)

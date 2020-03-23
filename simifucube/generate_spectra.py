@@ -290,7 +290,7 @@ def muse_rebin(last_valid_freq, cube):
     if last_valid_freq > MUSE_LIMITS['stop']:
         last_valid_freq = MUSE_LIMITS['stop']
     new_bins = np.arange(MUSE_LIMITS['start'], last_valid_freq, MUSE_LIMITS['step']) * u.AA
-    print('new_bins=',new_bins)
+    print('new_bins =',new_bins)
     muse_cube = cube.spectral_interpolate(new_bins)
     return muse_cube
 

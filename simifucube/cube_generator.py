@@ -41,10 +41,10 @@ class MySpectralCube(SpectralCube):
         super().__init__(*args, **kwargs)
 
     def spectral_smooth_variable_width(self, convolve, kernel, var,
-                        verbose=0,
-                        use_memmap=True,
-                        num_cores=None,
-                        **kwargs):
+                                       verbose=0,
+                                       use_memmap=True,
+                                       num_cores=None,
+                                       **kwargs):
         """
         Smooth the cube along the spectral dimension with a variable smoothing kernel
 
@@ -190,7 +190,7 @@ class CubeGenerator:
 
         print('Creating cube...')
         cube = MySpectralCube(data=self.datacube.astype(np.float32) * spectra1d.flux.unit,
-                            wcs=wcs,
-                            mask=mask,
-                            header=header)
+                              wcs=wcs,
+                              mask=mask,
+                              header=header)
         return cube
