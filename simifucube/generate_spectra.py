@@ -293,3 +293,36 @@ def muse_rebin(last_valid_freq, cube):
     print('new_bins=',new_bins)
     muse_cube = cube.spectral_interpolate(new_bins)
     return muse_cube
+
+from numba import jit
+@jit
+def _muse_spectral_resolution_sigma_udf10(l):
+    """Eq. (8) Bacon 2017, Fudf10(λ)"""
+    fwhm_factor = np.sqrt(8*np.log(2))
+    sigma = fwhm_factor * 5.866e-8 * l**2 - 9.187e-4 * l + 6.040
+    return sigma
+
+
+# from simifucube.generate_spectra import _muse_spectral_resolution_fwhm_udf10
+# def my_varconvolve(y, **kwargs):
+#     from simifucube.util.varconvolve import varconvolve, gaussian_kernel
+#     from astropy.convolution import Gaussian1DKernel
+
+#     # print("Convolving with MUSE line spread function...")
+#     # print(*args)
+#     return varconvolve(self.spectral_axis.view(np.ndarray), y, kernel=gaussian_kernel, var=_muse_spectral_resolution_sigma_udf10)
+
+from astropy.convolution import Gaussian1DKernel
+def my_kernel(s):
+    return Gaussian1DKernel(s).array
+
+def muse_spectral_smooth(cube):
+    # Adapted from https://spectral-cube.readthedocs.io/en/latest/smoothing.html#spectral-smoothing
+    from simifucube.util.varconvolve import varconvolve, _gaussian_kernel
+
+    print("Convolving with MUSE line spread function...")
+    # muse_cube = cube.spectral_smooth(kernel=Gaussian1DKernel(), parallel=False, convolve=varconvolve, kernel= var=_muse_spectral_resolution_sigma_udf10)
+
+    muse_cube = cube.spectral_smooth_variable_width(kernel=my_kernel, parallel=True, num_cores=8)
+    return muse_cube
+

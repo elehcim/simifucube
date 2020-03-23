@@ -25,7 +25,7 @@ from astropy.io.fits.verify import VerifyWarning
 
 from spectral_cube import SpectralCube
 
-from simifucube.generate_spectra import SnapSpectra, muse_rebin
+from simifucube.generate_spectra import SnapSpectra, muse_rebin, muse_spectral_smooth
 from simifucube.cube_generator import CubeGenerator
 from simifucube.write_cube import write_cube
 from simifucube.util.der_snr import DER_SNR
@@ -81,6 +81,8 @@ def generate_cube(config):
     # Creating actual cube
     cube_sph = cg.create_spectral_cube()
 
+    if config.getboolean('do_spectral_smoothing'):
+        cube_sph = muse_spectral_smooth(cube_sph)
 
     if config.getboolean('do_spectral_rebinning'):
         muse_cube = muse_rebin(snsp.last_valid_freq, cube_sph)
