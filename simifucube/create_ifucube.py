@@ -33,7 +33,7 @@ from simifucube.util.der_snr import DER_SNR
 def generate_cube(config):
     out_name = config['out_name']
     bins = config.getint('bins')
-    size_cuboid = config.getint('size_cuboid')
+    size_cuboid = config.getfloat('size_cuboid')
 
     if out_name is None or out_name=='':
         out_name = os.path.splitext(config['snap_name'])[0] + 'r{}pix{}.fits'.format(size_cuboid,bins)
