@@ -304,7 +304,8 @@ from numba import jit
 def _muse_spectral_resolution_sigma_udf10(l):
     """Eq. (8) Bacon 2017, Fudf10(λ)"""
     fwhm_factor = np.sqrt(8*np.log(2))
-    sigma = fwhm_factor * 5.866e-8 * l**2 - 9.187e-4 * l + 6.040
+    fwhm  = fwhm_factor * 5.866e-8 * l**2 - 9.187e-4 * l + 6.040
+    sigma = fwhm / fwhm_factor
     return sigma
 
 def _test_var(l):
@@ -320,6 +321,10 @@ def muse_spectral_smooth(cube):
     from simifucube.util.varconvolve import varconvolve, _gaussian_kernel
 
     print("Convolving with MUSE line spread function...")
-    muse_cube = cube.spectral_smooth_variable_width(convolve=varconvolve, kernel=my_kernel, var=_muse_spectral_resolution_sigma_udf10, parallel=False, num_cores=8)
+    muse_cube = cube.spectral_smooth_variable_width(convolve=varconvolve,
+                                                    kernel=my_kernel,
+                                                    var=_muse_spectral_resolution_sigma_udf10,
+                                                    parallel=False,
+                                                    num_cores=8)
     return muse_cube
 
