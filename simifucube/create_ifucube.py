@@ -65,6 +65,26 @@ def generate_cube(config):
         im = cg.sph_projection_direct(num_threads=config.getint('num_threads'))
         print('datacube max flux', np.max(cg.datacube))
 
+    # # Do noise:
+    # if config.getboolean('do_noise'):
+    #     print('Computing noise')
+    #     # We defined the contamination range (the dispersion ) in a way that the residuals
+    #     # between the constructed spectrum and the original spectrum of
+    #     # the library to be less than ~ 0.073.
+
+    #     sigma = config.getfloat('sigma')
+    #     noise = np.random.normal(loc=0.0, scale=sigma*cg.datacube)
+    #     print('Adding noise to signal')
+    #     cg.datacube += noise
+
+
+    # Creating actual cube
+    cube_sph = cg.create_spectral_cube()
+
+    if config.getboolean('do_spectral_smoothing'):
+        cube_sph = muse_spectral_smooth(cube_sph)
+        cube_sph._data = cube_sph._data.astype(np.float32)
+
     # Do noise:
     if config.getboolean('do_noise'):
         print('Computing noise')
@@ -73,16 +93,10 @@ def generate_cube(config):
         # the library to be less than ~ 0.073.
 
         sigma = config.getfloat('sigma')
-        noise = np.random.normal(loc=0.0, scale=sigma*cg.datacube)
+        noise = np.random.normal(loc=0.0, scale=sigma*cube_sph._data).astype(np.float32)
         print('Adding noise to signal')
-        cg.datacube += noise
+        cube_sph._data += noise
 
-
-    # Creating actual cube
-    cube_sph = cg.create_spectral_cube()
-
-    if config.getboolean('do_spectral_smoothing'):
-        cube_sph = muse_spectral_smooth(cube_sph)
 
     if config.getboolean('do_spectral_rebinning'):
         muse_cube = muse_rebin(snsp.last_valid_freq, cube_sph)
