@@ -179,8 +179,7 @@ def _get_ftype(snap):
         return None
 
 
-@pynbody.derived_array
-def feh(snap, na_value=NA_VALUE_FEH):
+def feh_template(snap, na_value):
     ftype = _get_ftype(snap)
     if not ftype:
         raise RuntimeError("Derived array 'feh' is available only for family gas or star")
@@ -191,6 +190,14 @@ def feh(snap, na_value=NA_VALUE_FEH):
     arr = np.log10(np.divide(snap[name], snap['mass'], out=out, where=np.logical_not(na_value_condition))) - FeH_corr
     arr[na_value_condition] = na_value  # -98.0
     return arr
+
+@pynbody.derived_array
+def feh(snap):
+    return feh_template(snap, na_value=NA_VALUE_FEH)
+
+@pynbody.derived_array
+def feh_2_27(snap):
+    return feh_template(snap, na_value=-2.27)
 
 
 @pynbody.derived_array
