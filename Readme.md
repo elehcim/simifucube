@@ -1,7 +1,6 @@
 `simifucube`
 ============
-
-<!-- [![DOI](https://zenodo.org/badge/.svg)](https://zenodo.org/badge/latestdoi/) -->
+[![DOI](https://zenodo.org/badge/213649175.svg)](https://zenodo.org/badge/latestdoi/213649175)
 
 Package to create MUSE-like data cubes from simulations of galaxy.
 
