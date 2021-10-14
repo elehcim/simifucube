@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Mastropietro
+    given-names: Michele
+    orcid: https://orcid.org/0000-0002-6324-5713
+title: "simifucube"
+version: 0.1
+doi: 10.5281/zenodo.4975433
+date-released: 2021-06-17
